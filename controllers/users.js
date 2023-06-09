@@ -8,6 +8,7 @@ const {
   CastErr,
   ValErr,
   BAD_REQUIEST,
+  NOT_FOUND,
 } = require('../statusServerName');
 
 const getUsers = (req, res) => {
@@ -32,6 +33,11 @@ const getUserById = (req, res) => {
       if (user) res.status(OK).send(user);
     })
     .catch((err) => {
+      if (err.name === CastErr) {
+        res
+          .status(NOT_FOUND)
+          .res({ message: 'Похоже, такого пользователя нет' });
+      }
       res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Internal Server Error',
         err: err.message,
