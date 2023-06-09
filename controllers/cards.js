@@ -83,7 +83,7 @@ const likeCard = (req, res) => {
     .catch((err) => {
       if (err.name === DocNotFound) {
         res
-          .status(FORBITTEN)
+          .status(NOT_FOUND)
           .send({ message: 'Такого лайка нет в списке массивов лайков' });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({

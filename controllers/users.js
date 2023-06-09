@@ -28,8 +28,8 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   userModel
     .findById(req.params.userid)
-    .then((u) => {
-      res.status(OK).send(u);
+    .then((user) => {
+      if (user) res.status(OK).send(user);
     })
     .catch((err) => {
       res.status(INTERNAL_SERVER_ERROR).send({
@@ -45,7 +45,7 @@ const createUser = (req, res) => {
     .create(req.body)
     .then((user) => res.status(CREATED).send(user))
     .catch((err) => {
-      if (err.name === CastErr || err.name === ValErr) {
+      if (err.name === ValErr) {
         return res.status(BAD_REQUIEST).send({
           message: 'Переданы некорректные данные при создании пользователя',
         });
@@ -65,7 +65,7 @@ const updateUserInfo = (req, res) => {
     .findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .then(() => res.status(OK).send({ message: 'Изменения сохранены' }))
     .catch((err) => {
-      if (err.name === CastErr || err.name === ValErr) {
+      if (err.name === ValErr) {
         return res.status(BAD_REQUIEST).send({
           message: 'Переданы некорректные данные при создании пользователя',
         });
