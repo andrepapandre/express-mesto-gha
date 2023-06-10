@@ -35,12 +35,15 @@ const getUserById = (req, res) => {
       if (user) res.status(OK).send(user);
     })
     .catch((err) => {
-      if (err.name === DocNotFound || err.name === CastErr) {
-        return res
-          .status(BAD_REQUIEST)
-          .send({
-            message: 'Пользователь не найден или _id пользователя некорректен',
-          });
+      if (err.name === CastErr) {
+        return res.status(NOT_FOUND).send({
+          message: 'Пользователь не найден',
+        });
+      }
+      if (err.name === DocNotFound) {
+        return res.status(BAD_REQUIEST).send({
+          message: '_id пользователя некорректен',
+        });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Internal Server Error',
@@ -98,9 +101,7 @@ const updateAvatar = (req, res) => {
       res.status(OK).send({ message: 'Аватар успешно обновлен' });
     })
     .catch(() => {
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка сервера' });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
     });
 };
 
