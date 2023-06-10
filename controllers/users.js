@@ -84,6 +84,13 @@ const updateUserInfo = (req, res) => {
           message: 'Переданы некорректные данные при создании пользователя',
         });
       }
+      if (err.name === DocNotFound) {
+        return res
+          .status(NOT_FOUND)
+          .send({
+            message: 'Пользователь не найден или _id пользователя некорректен',
+          });
+      }
       return res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: 'Ошибка сервера' });
@@ -100,8 +107,22 @@ const updateAvatar = (req, res) => {
     .then(() => {
       res.status(OK).send({ message: 'Аватар успешно обновлен' });
     })
-    .catch(() => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
+    .catch((err) => {
+      if (err.name === ValErr) {
+        return res.status(BAD_REQUIEST).send({
+          message: 'Переданы некорректные данные при создании пользователя',
+        });
+      }
+      if (err.name === DocNotFound) {
+        return res
+          .status(NOT_FOUND)
+          .send({
+            message: 'Пользователь не найден или _id пользователя некорректен',
+          });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: 'Ошибка сервера' });
     });
 };
 
