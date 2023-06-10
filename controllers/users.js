@@ -2,13 +2,14 @@ const userModel = require('../models/user');
 const {
   OK,
   CREATED,
-  // NOT_FOUND,
-  // BAD_REQUIEST,
+  BAD_REQUIEST,
+  // UNAUTHORIZED_ERROR,
+  // FORBITTEN,
+  NOT_FOUND,
   INTERNAL_SERVER_ERROR,
+  DocNotFound,
   CastErr,
   ValErr,
-  BAD_REQUIEST,
-  NOT_FOUND,
 } = require('../statusServerName');
 
 const getUsers = (req, res) => {
@@ -29,16 +30,19 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   userModel
     .findById(req.params.userid)
+    .orFail()
     .then((user) => {
       if (user) res.status(OK).send(user);
     })
     .catch((err) => {
-      if (err.name === CastErr) {
-        res
+      if (err.name === DocNotFound || err.name === CastErr) {
+        return res
           .status(NOT_FOUND)
-          .res({ message: 'Похоже, такого пользователя нет' });
+          .send({
+            message: 'Пользователь не найден или _id пользователя некорректен',
+          });
       }
-      res.status(INTERNAL_SERVER_ERROR).send({
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Internal Server Error',
         err: err.message,
         stack: err.stack,
@@ -69,6 +73,7 @@ const updateUserInfo = (req, res) => {
   const { _id } = req.user._id;
   userModel
     .findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
+    .orFail()
     .then(() => res.status(OK).send({ message: 'Изменения сохранены' }))
     .catch((err) => {
       if (err.name === ValErr) {
@@ -88,16 +93,12 @@ const updateAvatar = (req, res) => {
 
   userModel
     .findByIdAndUpdate(_id, { ...req.body }, { new: true, runValidators: true })
+    .orFail()
     .then(() => {
       res.status(OK).send({ message: 'Аватар успешно обновлен' });
     })
-    .catch((err) => {
-      if (err.name === CastErr || err.name === ValErr) {
-        return res.status(BAD_REQUIEST).send({
-          message: 'Переданы некорректные данные при создании пользователя',
-        });
-      }
-      return res
+    .catch(() => {
+      res
         .status(INTERNAL_SERVER_ERROR)
         .send({ message: 'Ошибка сервера' });
     });

@@ -10,6 +10,9 @@ const {
   DocNotFound,
   // CastErr,
   ValErr,
+  CREATED,
+  CastErr,
+  BAD_REQUIEST,
 } = require('../statusServerName');
 
 const getCards = (req, res) => {
@@ -31,8 +34,8 @@ const deleteCardbyId = (req, res) => {
   const { _id } = req.user._id;
   cardModel
     .findById(req.params.cardid)
+    .orFail()
     .then(() => {
-      // card не находится, искал 3 часа
       if (req.user._id !== _id) {
         res.status(FORBITTEN).send({ message: 'Нет прав доступа' });
       }
@@ -43,6 +46,11 @@ const deleteCardbyId = (req, res) => {
     .catch((err) => {
       if (err.name === DocNotFound) {
         return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
+      }
+      if (err.name === CastErr) {
+        return res
+          .status(BAD_REQUIEST)
+          .send({ message: 'Некорректный _id карточки' });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Произошла ошибка',
@@ -55,14 +63,14 @@ const deleteCardbyId = (req, res) => {
 const createCard = (req, res) => {
   cardModel
     .create({ ...req.body, owner: req.user._id })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => res.status(CREATED).send({ data: card }))
     .catch((err) => {
       if (err.name === ValErr) {
-        return res.status(403).send({
+        return res.status(BAD_REQUIEST).send({
           message: 'Переданы некорректные данные при создании карточки',
         });
       }
-      return res.status(500).send({
+      return res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Произошла ошибка',
         err: err.message,
         stack: err.stack,
