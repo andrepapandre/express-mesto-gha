@@ -37,12 +37,12 @@ const getUserById = (req, res) => {
     .catch((err) => {
       if (err.name === CastErr) {
         return res.status(BAD_REQUIEST).send({
-          message: 'Пользователь не найден',
+          message: '_id пользователя некорректен',
         });
       }
       if (err.name === DocNotFound) {
         return res.status(NOT_FOUND).send({
-          message: '_id пользователя некорректен',
+          message: 'Пользователь не найден',
         });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({

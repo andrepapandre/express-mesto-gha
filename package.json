@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/andrepapandre/express-mesto-gha#readme",
   "devDependencies": {
+    "eslint": "^8.35.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
     "nodemon": "^2.0.22"
   },
   "dependencies": {

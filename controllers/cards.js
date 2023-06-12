@@ -89,10 +89,15 @@ const likeCard = (req, res) => {
       res.status(OK).send({ message: 'Лайк поставлен' });
     })
     .catch((err) => {
+      if (err.name === CastErr) {
+        res
+          .status(BAD_REQUIEST)
+          .send({ message: 'Переданы некорректные данные' });
+      }
       if (err.name === DocNotFound) {
         res
           .status(NOT_FOUND)
-          .send({ message: 'Такого лайка нет в списке массивов лайков' });
+          .send({ message: 'Не найдена карточка с таким _id' });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Произошла ошибка',
@@ -113,10 +118,15 @@ const dislikeCard = (req, res) => {
       res.status(OK).send({ message: 'Лайк удален' });
     })
     .catch((err) => {
+      if (err.name === CastErr) {
+        res
+          .status(BAD_REQUIEST)
+          .send({ message: 'Переданы некорректные данные' });
+      }
       if (err.name === DocNotFound) {
         res
           .status(FORBITTEN)
-          .send({ message: 'Такого лайка нет в списке массивов лайков' });
+          .send({ message: 'Не найдена карточка с таким _id' });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({
         message: 'Произошла ошибка',
