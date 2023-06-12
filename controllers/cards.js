@@ -125,7 +125,7 @@ const dislikeCard = (req, res) => {
       }
       if (err.name === DocNotFound) {
         res
-          .status(FORBITTEN)
+          .status(NOT_FOUND)
           .send({ message: 'Не найдена карточка с таким _id' });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({
