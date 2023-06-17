@@ -1,7 +1,7 @@
 const userModel = require('../models/user');
 const {
   OK,
-  CREATED,
+  // CREATED,
   BAD_REQUIEST,
   // UNAUTHORIZED_ERROR,
   // FORBITTEN,
@@ -53,24 +53,6 @@ const getUserById = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
-  userModel
-    .create(req.body)
-    .then((user) => res.status(CREATED).send(user))
-    .catch((err) => {
-      if (err.name === ValErr) {
-        return res.status(BAD_REQUIEST).send({
-          message: 'Переданы некорректные данные при создании пользователя',
-        });
-      }
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Произошла ошибка',
-        err: err.message,
-        stack: err.stack,
-      });
-    });
-};
-
 const updateUserInfo = (req, res) => {
   const { name, about } = req.body;
   const { _id } = req.user._id;
@@ -85,11 +67,9 @@ const updateUserInfo = (req, res) => {
         });
       }
       if (err.name === DocNotFound) {
-        return res
-          .status(NOT_FOUND)
-          .send({
-            message: 'Пользователь не найден или _id пользователя некорректен',
-          });
+        return res.status(NOT_FOUND).send({
+          message: 'Пользователь не найден или _id пользователя некорректен',
+        });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
@@ -114,11 +94,9 @@ const updateAvatar = (req, res) => {
         });
       }
       if (err.name === DocNotFound) {
-        return res
-          .status(NOT_FOUND)
-          .send({
-            message: 'Пользователь не найден или _id пользователя некорректен',
-          });
+        return res.status(NOT_FOUND).send({
+          message: 'Пользователь не найден или _id пользователя некорректен',
+        });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
@@ -129,7 +107,6 @@ const updateAvatar = (req, res) => {
 module.exports = {
   getUsers,
   getUserById,
-  createUser,
   updateUserInfo,
   updateAvatar,
 };
