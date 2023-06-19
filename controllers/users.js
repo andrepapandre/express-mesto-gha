@@ -1,33 +1,22 @@
 const userModel = require('../models/user');
 const {
   OK,
-  // CREATED,
-  BAD_REQUIEST,
-  // UNAUTHORIZED_ERROR,
-  // FORBITTEN,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
   DocNotFound,
-  CastErr,
   ValErr,
 } = require('../statusServerName');
+const NotFound = require('../errors/not-found-err');
+const BadRequest = require('../errors/bad-requiest');
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   userModel
     .find({})
     .then((users) => {
       res.status(OK).send(users);
     })
-    .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      });
-    });
+    .catch((err) => next(err));
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   userModel
     .findById(req.params.userid)
     .orFail()
@@ -35,25 +24,15 @@ const getUserById = (req, res) => {
       if (user) res.status(OK).send(user);
     })
     .catch((err) => {
-      if (err.name === CastErr) {
-        return res.status(BAD_REQUIEST).send({
-          message: '_id пользователя некорректен',
-        });
+      if (err.name === 'CastError') {
+        next(new BadRequest('Переданы некорректные данные'));
+        return;
       }
-      if (err.name === DocNotFound) {
-        return res.status(NOT_FOUND).send({
-          message: 'Пользователь не найден',
-        });
-      }
-      return res.status(INTERNAL_SERVER_ERROR).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      });
+      next(err);
     });
 };
 
-const updateUserInfo = (req, res) => {
+const updateUserInfo = (req, res, next) => {
   const { name, about } = req.body;
   const { _id } = req.user._id;
   userModel
@@ -62,23 +41,18 @@ const updateUserInfo = (req, res) => {
     .then(() => res.status(OK).send({ message: 'Изменения сохранены' }))
     .catch((err) => {
       if (err.name === ValErr) {
-        return res.status(BAD_REQUIEST).send({
-          message: 'Переданы некорректные данные при создании пользователя',
-        });
+        next(new BadRequest('Переданы некорректные данные при создании пользователя'));
+        return;
       }
       if (err.name === DocNotFound) {
-        return res.status(NOT_FOUND).send({
-          message: 'Пользователь не найден или _id пользователя некорректен',
-        });
+        next(new NotFound('Пользователь не найден или _id пользователя некорректен'));
+        return;
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка сервера' });
+      next(err);
     });
 };
 
-const updateAvatar = (req, res) => {
-  // const { avatar } = req.body;
+const updateAvatar = (req, res, next) => {
   const { _id } = req.user._id;
 
   userModel
@@ -89,18 +63,14 @@ const updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err.name === ValErr) {
-        return res.status(BAD_REQUIEST).send({
-          message: 'Переданы некорректные данные при создании пользователя',
-        });
+        next(new BadRequest('Переданы некорректные данные при создании пользователя'));
+        return;
       }
       if (err.name === DocNotFound) {
-        return res.status(NOT_FOUND).send({
-          message: 'Пользователь не найден или _id пользователя некорректен',
-        });
+        next(new NotFound('Пользователь не найден или _id пользователя некорректен'));
+        return;
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: 'Ошибка сервера' });
+      next(err);
     });
 };
 

@@ -7,7 +7,7 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "lint": "npx eslint .",
-    "lint:fix": "npx esling . --fix"
+    "lint:fix": "npx eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -21,9 +21,11 @@
   "homepage": "https://github.com/andrepapandre/express-mesto-gha#readme",
   "devDependencies": {
     "bcrypt": "^5.1.0",
+    "celebrate": "^15.0.1",
     "eslint": "^8.35.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
+    "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.6.0",
     "nodemon": "^2.0.22",
