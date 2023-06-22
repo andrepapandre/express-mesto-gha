@@ -30,8 +30,7 @@ const createUser = (req, res, next) => {
       }))
       .catch((err) => {
         if (err.code === 11000) {
-          next(new ConflictError('Такой пользователь уже существует'));
-          return;
+          res.status(409).send({ message: "Такой пользователь уже существует" })
         }
         if (err.name === ValErr) {
           next(
@@ -60,8 +59,7 @@ const loginUser = (req, res, next) => {
         expiresIn: '7d',
       });
       if (!isEqual) {
-        next(new AuthError('Неверный email или пароль'));
-        return;
+        return res.status(409).send({ message: "Неверный email или пароль'" })
       }
       res.status(OK).send({ token });
     })
